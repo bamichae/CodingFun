@@ -1,0 +1,128 @@
+'''
+Kind of a childish thing I thought would be funny to mess with my friends who post
+quizzes about themselves on social media.
+
+This program inserts a swear instead of the quiz taker's real name and uses spaces in between the swear
+to bypass BuddMeter.com's swear filter.
+
+You can complete the victim's quiz once and note the correct answers, then fill out
+the corresponding answer's number in the click_correct_answer function to get all 10's
+on their quiz so all the swears show at the top of the results page.
+
+You'll need selenium on your machine as well.
+
+Enjoy!
+
+@author Ben Michaels
+'''
+
+from selenium import webdriver# chrome driver for rendering webpage
+from random import randrange
+from random import shuffle
+from time import sleep
+
+def open_quiz(quiz_url):
+    try:
+        driver.get(quiz_url)
+        driver.implicitly_wait(5)
+    except Exception as e:
+        print("Could not open quiz", e)
+
+def fill_name(name):
+    try:
+        web_element = driver.find_element_by_id('name_text')
+        web_element.clear()
+        web_element.send_keys(name)
+    except Exception as e:
+        print("Could not fill name", e)
+
+def click(id):
+    try:
+        web_element = driver.find_element_by_id(id)
+        web_element.click()
+        sleep(1)
+    except Exception as e:
+        print("Could not fill name", e)
+
+def rand_num():
+    return randrange(1, 4)
+
+
+def rand_option():
+    return 'option_' + str(rand_num())
+
+def option(num):
+    return 'option_' + str(num)
+
+def click_random_answers():
+    try:
+        for x in range(0, 10):
+            option = rand_option()
+            click(option)
+    except Exception as e:
+        print("Could not complete quiz", e)
+
+#bypasses swear filter
+def add_spaces(name):
+    new_name = ''
+    for letter in name:
+        new_name += letter + ' '
+    return new_name
+
+#change these for the specific quiz
+def click_correct_answers():
+    click(option(5))
+    click(option(3))
+    click(option(4))
+    click(option(3))
+    click(option(6))
+    click(option(3))
+    click(option(4))
+    click(option(6))
+    click(option(3))
+    click(option(5))
+
+def open_swears(path):
+    f = open(path, 'r')
+    swears = f.readlines()
+    f.close()
+    return swears
+
+def create_dirty_name():
+    shuffle(swear_library)
+    return add_spaces(swear_library[0])
+
+def fill_out_dirty_name():
+    name = create_dirty_name()
+    fill_name(name)
+
+def click_start_button():
+    click('name_button')
+
+def start_quiz():
+    open_quiz(url)
+    fill_out_dirty_name()
+    click_start_button()
+
+def initialize_driver():
+    return webdriver.Chrome()
+
+def close_driver():
+    driver.close()
+
+def random_or_correct_answers(choice):
+    if choice == 'random_answers':
+        click_random_answers()
+    elif choice == 'correct_answers':
+        click_correct_answers()
+
+url = '***___BuddyMeter.com url here___***'
+swear_path = '***___path to your file of swears/bad words/anything you want (can be found online)___***'
+swear_library = open_swears(swear_path)
+
+while(True):
+    driver = initialize_driver()
+    start_quiz()
+    random_or_correct_answers('correct_answers')
+    close_driver()
+    sleep(1)
